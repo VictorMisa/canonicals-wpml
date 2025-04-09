@@ -1,0 +1,25 @@
+add_action( 'after_setup_theme', function() {
+
+    remove_all_filters( 'wpseo_canonical' );
+
+    add_filter( 'wpseo_canonical', 'forzar_canonical_wpml', PHP_INT_MAX );
+});
+
+
+function forzar_canonical_wpml( $canonical ) {
+
+    if ( is_singular( 'product' ) ) {
+        return get_permalink();
+    }
+
+    if ( is_category() || is_tag() || is_tax() ) {
+        return get_term_link( get_queried_object() );
+    }
+
+    if ( is_front_page() && function_exists( 'ICL_LANGUAGE_CODE' ) ) {
+        $lang = ICL_LANGUAGE_CODE;
+        return home_url( "/$lang/" );
+    }
+
+    return $canonical;
+}
